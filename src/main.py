@@ -76,7 +76,7 @@ def get_local_file(relative_path: str) -> str:
         return f.read()
 
 # Merging logic (unchanged from previous)
-def merge_config(template: dict, config: dict, precision: int = 15) -> dict:
+def merge_config(template: dict, config: dict, precision: int = 4) -> dict:
     """
     Safely merges YAML config into JSON template with precision control.
 
@@ -91,14 +91,13 @@ def merge_config(template: dict, config: dict, precision: int = 15) -> dict:
     if not isinstance(template, dict) or not isinstance(config, dict):
         raise TypeError("Both inputs must be dictionaries")
 
-    result = template.copy()  # Preserve original
     common_keys = set(template.keys()) & set(config.keys())
 
     for key in common_keys:
         if isinstance(config[key], float):
-            result[key] = round(config[key], precision)
+            template[key] = round(config[key], precision)
         elif isinstance(config[key], (int, str, bool)):  # Explicit basic types
-            result[key] = config[key]
+            template[key] = config[key]
         # Else: ignores complex types (arrays/dicts)
 
-    return result
+    return template
