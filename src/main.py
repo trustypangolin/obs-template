@@ -76,10 +76,7 @@ def get_local_file(relative_path: str) -> str:
 # Merging logic (unchanged from previous)
 def merge_config(template, config):
     """Merge YAML config values into JSON template"""
-    for scene in template.get('scenes', []):
-        for source in scene.get('sources', []):
-            if source['name'] in config.get('sources', {}):
-                if 'url' in source:
-                    source['url'] = config['sources'][source['name']]['url']
-                source.update(config['sources'][source['name']].get('properties', {}))
+    # Apply replacements
+    for key in config:
+        template[key] = config[key]
     return template

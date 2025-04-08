@@ -1,6 +1,2 @@
-sources:
-  "Webcam Source":
-    url: "https://your-stream.example.com/video"
-    properties:
-      width: 1920
-      height: 1080
+# Alternate version (explicit key)
+name: "My Custom Name"
