@@ -3,8 +3,7 @@ import yaml
 import os
 from typing import Dict, Any
 import requests
-from decimal import Decimal, getcontext
-getcontext().prec = 15  # Set precision
+
 
 def lambda_handler(event=None, context=None):
     """AWS Lambda entry point"""
@@ -98,6 +97,5 @@ def merge_config(template: dict, config: dict, precision: int = 4) -> dict:
             template[key] = round(config[key], precision)
         elif isinstance(config[key], (int, str, bool)):  # Explicit basic types
             template[key] = config[key]
-        # Else: ignores complex types (arrays/dicts)
 
     return template
