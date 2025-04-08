@@ -3,6 +3,8 @@ import yaml
 import os
 from typing import Dict, Any
 import requests
+from decimal import Decimal, getcontext
+getcontext().prec = 14  # Set precision
 
 def lambda_handler(event=None, context=None):
     """AWS Lambda entry point"""
@@ -74,9 +76,15 @@ def get_local_file(relative_path: str) -> str:
         return f.read()
 
 # Merging logic (unchanged from previous)
-def merge_config(template, config):
+def merge_config(template, config, precision=14):
     """Merge YAML config values into JSON template"""
+    common_keys = set(template.keys()) & set(config.keys())
+
     # Apply replacements
-    for key in config:
-        template[key] = config[key]
+    for key in common_keys:
+        # Preserve exact decimal values
+        if isinstance(config[key], float):
+            template[key] = round(config[key], precision)
+        else:
+            template[key] = config[key]
     return template
