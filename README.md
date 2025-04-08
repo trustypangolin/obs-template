@@ -19,3 +19,19 @@ apigw --> user : Response
 @enduml
 ```
 
+```dot
+digraph architecture {
+    rankdir=LR;
+    node [shape=box];
+    
+    User -> API_Gateway [label="HTTP Request"];
+    API_Gateway -> Lambda [label="Invoke"];
+    Lambda -> GitHub [label="Read Files"];
+    GitHub -> Lambda [label="JSON/YAML"];
+    Lambda -> API_Gateway [label="Templated JSON"];
+    API_Gateway -> User [label="Response"];
+    
+    {rank=same; API_Gateway Lambda}
+}
+```
+
