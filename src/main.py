@@ -4,7 +4,7 @@ import os
 from typing import Dict, Any
 import requests
 from decimal import Decimal, getcontext
-getcontext().prec = 14  # Set precision
+getcontext().prec = 15  # Set precision
 
 def lambda_handler(event=None, context=None):
     """AWS Lambda entry point"""
@@ -76,15 +76,29 @@ def get_local_file(relative_path: str) -> str:
         return f.read()
 
 # Merging logic (unchanged from previous)
-def merge_config(template, config, precision=14):
-    """Merge YAML config values into JSON template"""
+def merge_config(template: dict, config: dict, precision: int = 15) -> dict:
+    """
+    Safely merges YAML config into JSON template with precision control.
+
+    Args:
+        template: Original JSON data (dict)
+        config: YAML configuration (dict)
+        precision: Decimal places for rounding (default: 4)
+
+    Returns:
+        New dictionary with merged values (original remains unchanged)
+    """
+    if not isinstance(template, dict) or not isinstance(config, dict):
+        raise TypeError("Both inputs must be dictionaries")
+
+    result = template.copy()  # Preserve original
     common_keys = set(template.keys()) & set(config.keys())
 
-    # Apply replacements
     for key in common_keys:
-        # Preserve exact decimal values
         if isinstance(config[key], float):
-            template[key] = round(config[key], precision)
-        else:
-            template[key] = config[key]
-    return template
+            result[key] = round(config[key], precision)
+        elif isinstance(config[key], (int, str, bool)):  # Explicit basic types
+            result[key] = config[key]
+        # Else: ignores complex types (arrays/dicts)
+
+    return result
